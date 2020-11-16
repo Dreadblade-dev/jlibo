@@ -1,5 +1,8 @@
 <#import "parts/common.ftlh" as c>
+<#import "parts/login.ftlh" as l>
+<#include "parts/security.ftlh">
 <@c.page>
+    <@l.logout/>
     <h1>Java Library Online</h1>
     <h2>Welcome, <#if username??>${username}<#else>guest</#if>!</h2>
 
@@ -18,6 +21,7 @@
             <input type="file" id="bookFile" name="book">
             <label for="bookFile">Choose file (.pdf)</label>
         </div>
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
         <div>
             <button type="submit">Upload book</button>
         </div>

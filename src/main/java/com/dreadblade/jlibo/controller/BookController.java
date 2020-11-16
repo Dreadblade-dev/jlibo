@@ -2,19 +2,16 @@ package com.dreadblade.jlibo.controller;
 
 import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.service.BookService;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -36,14 +33,14 @@ public class BookController {
         return "main";
     }
 
-    @GetMapping("/books/{id}")
-    public void getBookFile(@PathVariable("id") Book book, HttpServletResponse response) {
+    @GetMapping(value = "/books/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public @ResponseBody byte[] getBookFile(@PathVariable("id") Book book) {
         try {
             String filename = uploadPath + "/books/" + book.getBookFilename();
-            InputStream is = new FileInputStream(filename);
-            IOUtils.copy(is, response.getOutputStream());
-            response.setContentType("application/pdf");
-            response.flushBuffer();
+            FileInputStream fis = new FileInputStream(filename);
+            byte[] data = new byte[fis.available()];
+            fis.read(data);
+            return data;
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("IOException when user downloads file");
@@ -62,6 +59,4 @@ public class BookController {
         model.addAttribute("books", books);
         return "main";
     }
-
-
 }
