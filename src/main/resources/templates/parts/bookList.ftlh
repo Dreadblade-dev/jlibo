@@ -5,7 +5,12 @@
                 <img src="/images/${book.getImageFilename()}">
             </a>
             <p>${book.getTitle()}</p>
-            <p>${book.getAuthor()}</p>
+            <p>
+                <a href="/author/${book.getAuthor().getId()}">
+                    ${book.getAuthor().getName()}
+                </a>
+            </p>
+            <p>Uploaded by: ${book.getUploadedBy().getUsername()}</p>
         </div>
     </#list>
 </#if>

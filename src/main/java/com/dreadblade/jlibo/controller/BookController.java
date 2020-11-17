@@ -1,10 +1,12 @@
 package com.dreadblade.jlibo.controller;
 
 import com.dreadblade.jlibo.domain.Book;
+import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -52,9 +54,15 @@ public class BookController {
                           @RequestParam String author,
                           @RequestParam("image") MultipartFile image,
                           @RequestParam("book") MultipartFile book,
+                          @AuthenticationPrincipal User uploadedBy,
                           Model model
     ) throws IOException {
-        bookService.addBook(title, author, image, book);
+        boolean isBookAdded = bookService.addBook(title, author, image, book, uploadedBy);
+
+        if (!isBookAdded) {
+            model.addAttribute("message", "This book already exists!");
+        }
+
         List<Book> books = bookService.findAll();
         model.addAttribute("books", books);
         return "main";

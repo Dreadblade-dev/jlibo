@@ -6,6 +6,10 @@
     <h1>Java Library Online</h1>
     <h2>Welcome, <#if username??>${username}<#else>guest</#if>!</h2>
 
+    <#if message??>
+        <p>${message}</p>
+    </#if>
+
     <form method="post" enctype="multipart/form-data" action="/books">
         <div>
             <input type="text" placeholder="Title" name="title">
