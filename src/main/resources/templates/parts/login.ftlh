@@ -1,22 +1,23 @@
 <#macro login path isSignUpForm>
-    <form action="${path}" method="post">
-        <div>
-            <input type="text" name="username" placeholder="Username">
+    <form action="${path}" method="post" class="form-group">
+        <div class="form-group">
+            <input type="text" name="username" placeholder="Username" class="form-control">
         </div>
-        <div>
-            <input type="password" name="password" placeholder="Password">
+
+        <div class="form-group">
+            <input type="password" name="password" placeholder="Password" class="form-control">
         </div>
 
         <#if isSignUpForm>
-            <div>
-                <input type="password" name="password_confirmation" placeholder="Confirm password">
+            <div class="form-group">
+                <input type="password" name="password_confirmation" placeholder="Confirm password" class="form-control">
             </div>
         </#if>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}">
 
-        <div>
-            <button type="submit">
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
                 <#if isSignUpForm>
                     Sign up
                 <#else>
@@ -26,11 +27,11 @@
         </div>
     </form>
     <#if isSignUpForm>
-        <a href="/login">
+        <a href="/login" class="btn btn-link">
             Already have an account? Sign in
         </a>
         <#else>
-        <a href="/sign-up">
+        <a href="/sign-up" class="btn btn-link">
             Don't have an account? Sign up
         </a>
     </#if>
@@ -40,7 +41,7 @@
     <#include "security.ftlh">
     <form action="<#if user??>/logout<#else>/login</#if>" method="post">
         <input type="hidden" name="_csrf" value="${_csrf.token}">
-        <button type="submit">
+        <button type="submit" class="btn btn-primary">
             <#if user??>
                 Sign out
                 <#else>
