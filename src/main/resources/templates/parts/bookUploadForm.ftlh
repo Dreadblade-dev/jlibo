@@ -1,9 +1,11 @@
-<a class="btn btn-primary mb-3 mt-2" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Upload book
-</a>
+<div class="container justify-content-center align-items-center">
+    <a class="btn btn-primary mb-3 mt-2" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        Upload book
+    </a>
+</div>
 
 <div class="collapse" id="collapseExample">
-    <div class="form-group mt-3">
+    <div class="form-group mt-3 container justify-content-center align-items-center">
         <form method="post" enctype="multipart/form-data" action="/books">
             <div class="form-group">
                 <input type="text" placeholder="Title" name="title" class="form-control">

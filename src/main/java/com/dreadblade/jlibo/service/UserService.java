@@ -20,20 +20,18 @@ public class UserService implements UserDetailsService {
         this.userRepo = userRepo;
     }
 
-    public void addUser(String username, String password, String passwordConfirmation) {
-        User userFromDb = userRepo.findByUsername(username);
+    public boolean addUser(User user) {
+        User userFromDb = userRepo.findByUsername(user.getUsername());
 
-        if (userFromDb == null) {
-            if (password != null && password.equals(passwordConfirmation)) {
-                User user = new User();
-                user.setUsername(username);
-                user.setPassword(password);
-                user.setRoles(Collections.singleton(Role.USER));
-                user.setActive(true);
-
-                userRepo.save(user);
-            }
+        if (userFromDb != null) {
+            return false;
         }
+
+        user.setRoles(Collections.singleton(Role.USER));
+        user.setActive(true);
+
+        userRepo.save(user);
+        return true;
     }
 
     @Override

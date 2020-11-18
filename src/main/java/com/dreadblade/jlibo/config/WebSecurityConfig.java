@@ -1,5 +1,6 @@
 package com.dreadblade.jlibo.config;
 
+import com.dreadblade.jlibo.domain.Role;
 import com.dreadblade.jlibo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                     .antMatchers("/sign-up").not().fullyAuthenticated()
-                    .antMatchers("/login").not().fullyAuthenticated()
+                    .antMatchers("/author/edit/**").hasAuthority(Role.ADMIN.getAuthority())
+                    .antMatchers("/books/edit/**").hasAuthority(Role.ADMIN.getAuthority())
                     .antMatchers("/images/**").permitAll()
                     .antMatchers("/author/**").permitAll()
                     .antMatchers("/").permitAll()

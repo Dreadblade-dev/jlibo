@@ -1,22 +1,28 @@
 package com.dreadblade.jlibo.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
 
 @Entity
 @Data
 @Table(name = "users")
+@EqualsAndHashCode(of = { "id" })
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "Username cannot be empty")
     private String username;
+
+    @NotBlank(message = "Password cannot be empty")
     private String password;
     private boolean active;
 

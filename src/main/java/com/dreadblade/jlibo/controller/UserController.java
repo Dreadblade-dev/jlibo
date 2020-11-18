@@ -1,11 +1,15 @@
 package com.dreadblade.jlibo.controller;
 
+import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.validation.Valid;
 
 @Controller
 public class UserController {
@@ -23,11 +27,24 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public String signUp(
-            @RequestParam String username,
-            @RequestParam String password,
-            @RequestParam(name = "password_confirmation") String passwordConfirmation
+            @Valid User user,
+            @RequestParam(name = "password_confirmation") String passwordConfirmation,
+            Model model
     ) {
-        userService.addUser(username, password, passwordConfirmation);
+        if (passwordConfirmation == null || passwordConfirmation.isEmpty()) {
+            model.addAttribute("message", "Password confirmation cannot be empty");
+            return "sign-up";
+        }
+
+        if (!passwordConfirmation.equals(user.getPassword())) {
+            model.addAttribute("message", "Passwords are different!");
+            return "sign-up";
+        }
+
+        if (!userService.addUser(user)) {
+            model.addAttribute("message", "User already exists!");
+            return "sign-up";
+        }
 
         return "redirect:/login";
     }
