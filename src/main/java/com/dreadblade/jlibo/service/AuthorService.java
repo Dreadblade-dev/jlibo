@@ -2,13 +2,19 @@ package com.dreadblade.jlibo.service;
 
 import com.dreadblade.jlibo.domain.Author;
 import com.dreadblade.jlibo.repo.AuthorRepo;
+import com.dreadblade.jlibo.util.FileUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 
 @Service
 public class AuthorService {
+    @Value("${jlibo.upload.path}")
+    private String uploadPath;
     private final AuthorRepo authorRepo;
 
     public AuthorService(AuthorRepo authorRepo) {
@@ -36,7 +42,7 @@ public class AuthorService {
 
         Author author = new Author();
         author.setName(name);
-        author.setDescription(name + "\'s biography");
+        author.setDescription("<" + name + "\'s biography>");
         author.setBooks(new HashSet<>());
 
         authorRepo.save(author);
@@ -44,7 +50,11 @@ public class AuthorService {
         return true;
     }
 
-    public void updateAuthor(Author author) {
+    public void updateAuthor(Author author, MultipartFile image) throws IOException {
+        if (image != null && !image.isEmpty()) {
+            String imageFilename = FileUtil.saveFile(image, uploadPath, FileUtil.TypeOfFile.AUTHOR_IMAGE);
+            author.setImageFilename(imageFilename);
+        }
         authorRepo.save(author);
     }
 }

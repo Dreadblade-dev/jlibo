@@ -10,10 +10,27 @@ import java.util.UUID;
 public class FileUtil {
     private static final String BOOKS_DIRECTORY = "/books";
     private static final String IMAGES_DIRECTORY = "/images";
+    private static final String AUTHOR_DIRECTORY = "/author";
 
-    public static String saveBookFile(MultipartFile book, String uploadPath) throws IOException {
+    public static enum TypeOfFile {
+        BOOK_FILE("/books"),
+        BOOK_IMAGE("/images"),
+        AUTHOR_IMAGE("/author");
+
+        private String directory;
+
+        TypeOfFile(String directory) {
+            this.directory = directory;
+        }
+
+        public String getDirectory() {
+            return directory;
+        }
+    }
+
+    public static String saveFile(MultipartFile book, String uploadPath, TypeOfFile type) throws IOException {
         if (book != null && !book.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath + BOOKS_DIRECTORY);
+            File uploadDir = new File(uploadPath +type.getDirectory());
 
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
@@ -26,24 +43,6 @@ public class FileUtil {
 
             return resultFilename;
         }
-        throw new RuntimeException("Error when saving book file!");
-    }
-
-    public static String saveBookCoverFile(MultipartFile image, String uploadPath) throws IOException {
-        if (image != null && !image.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath + IMAGES_DIRECTORY);
-
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
-
-            String uuid = UUID.randomUUID().toString();
-            String resultFilename = uuid + "." + image.getOriginalFilename();
-
-            image.transferTo(new File(uploadDir.toString() + "/" + resultFilename));
-
-            return resultFilename;
-        }
-        throw new RuntimeException("Error when saving image file!");
+        throw new RuntimeException("Error when saving file!");
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -47,5 +48,13 @@ public class UserController {
         }
 
         return "redirect:/login";
+    }
+
+    @GetMapping("/users-list")
+    public String usersList(Model model) {
+        List<User> users = userService.findAll();
+        model.addAttribute("users", users);
+
+        return "usersList";
     }
 }

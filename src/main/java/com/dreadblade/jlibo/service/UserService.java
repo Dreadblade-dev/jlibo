@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -18,6 +19,10 @@ public class UserService implements UserDetailsService {
     @Autowired
     public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
+    }
+
+    public List<User> findAll() {
+        return userRepo.findAll();
     }
 
     public boolean addUser(User user) {

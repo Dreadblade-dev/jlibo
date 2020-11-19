@@ -1,5 +1,6 @@
 package com.dreadblade.jlibo.controller;
 
+import com.dreadblade.jlibo.domain.Author;
 import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.BookService;
@@ -35,7 +36,7 @@ public class BookController {
         return "main";
     }
 
-    @GetMapping(value = "/books/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
+    @GetMapping(value = "/book/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
     public @ResponseBody byte[] getBookFile(@PathVariable("id") Book book) {
         try {
             String filename = uploadPath + "/books/" + book.getBookFilename();
@@ -49,11 +50,11 @@ public class BookController {
         }
     }
 
-    @PostMapping("/books")
+    @PostMapping("/book/new")
     public String addBook(@RequestParam String title,
-                          @RequestParam String author,
-                          @RequestParam("image") MultipartFile image,
-                          @RequestParam("book") MultipartFile book,
+                          @RequestParam("author_id") Author author,
+                          @RequestParam MultipartFile image,
+                          @RequestParam MultipartFile book,
                           @AuthenticationPrincipal User uploadedBy,
                           Model model
     ) throws IOException {
@@ -65,6 +66,6 @@ public class BookController {
 
         List<Book> books = bookService.findAll();
         model.addAttribute("books", books);
-        return "main";
+        return "redirect:/author/" + author.getId();
     }
 }

@@ -6,7 +6,7 @@
 
 <div class="collapse" id="collapseExample">
     <div class="form-group mt-3 container justify-content-center align-items-center">
-        <form method="post" enctype="multipart/form-data" action="/books">
+        <form method="post" enctype="multipart/form-data" action="/book/new">
             <div class="form-group">
                 <input type="text" placeholder="Title" name="title" class="form-control">
             </div>
@@ -22,6 +22,7 @@
                     <label class="custom-file-label" for="bookFile">Choose file (.pdf)</label>
                 </div>
             </div>
+            <input type="hidden" name="author_id" value="${author.getId()}">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <div class="form-group">
                 <button type="submit" class="btn btn-primary mb-2">Upload book</button>
