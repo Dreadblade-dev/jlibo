@@ -15,7 +15,6 @@
                         </p>
                         <p class="card-text">Uploaded by: ${book.getUploadedBy().getUsername()}</p>
                     </div>
-
                 </div>
             </#list>
         </div>

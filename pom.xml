@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.dreadblade</groupId>
-	<artifactId>java-library-online</artifactId>
+	<artifactId>jlibo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>java-library-online</name>
-	<description>Java Library Online - Learning Spring MVC project</description>
+	<name>jlibo</name>
+	<description>Java Library Online (Jlibo) - Learning Spring MVC project</description>
 
 	<properties>
 		<java.version>11</java.version>

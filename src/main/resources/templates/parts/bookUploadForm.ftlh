@@ -11,9 +11,6 @@
                 <input type="text" placeholder="Title" name="title" class="form-control">
             </div>
             <div class="form-group">
-                <input type="text" placeholder="Author" name="author" class="form-control">
-            </div>
-            <div class="form-group">
                 <div class="custom-file">
                     <input type="file" id="imageFile" name="image" class="form-control-file">
                     <label class="custom-file-label" for="imageFile">Choose image</label>

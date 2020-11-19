@@ -8,25 +8,42 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class FileUtil {
-    public static void saveBookFiles(MultipartFile file, Book book, String uploadPath) throws IOException {
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            String fileDirectory = file.getOriginalFilename().endsWith(".pdf") ? "/books" : "/images";
-            File uploadDir = new File(uploadPath + fileDirectory);
+    private static final String BOOKS_DIRECTORY = "/books";
+    private static final String IMAGES_DIRECTORY = "/images";
+
+    public static String saveBookFile(MultipartFile book, String uploadPath) throws IOException {
+        if (book != null && !book.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(uploadPath + BOOKS_DIRECTORY);
 
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
             String uuid = UUID.randomUUID().toString();
-            String resultFilename = uuid + "." + file.getOriginalFilename();
+            String resultFilename = uuid + "." + book.getOriginalFilename();
 
-            file.transferTo(new File(uploadDir.toString() + "/" + resultFilename));
+            book.transferTo(new File(uploadDir.toString() + "/" + resultFilename));
 
-            if (file.getOriginalFilename().endsWith(".pdf")) {
-                book.setBookFilename(resultFilename);
-            } else {
-                book.setImageFilename(resultFilename);
-            }
+            return resultFilename;
         }
+        throw new RuntimeException("Error when saving book file!");
+    }
+
+    public static String saveBookCoverFile(MultipartFile image, String uploadPath) throws IOException {
+        if (image != null && !image.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(uploadPath + IMAGES_DIRECTORY);
+
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            String uuid = UUID.randomUUID().toString();
+            String resultFilename = uuid + "." + image.getOriginalFilename();
+
+            image.transferTo(new File(uploadDir.toString() + "/" + resultFilename));
+
+            return resultFilename;
+        }
+        throw new RuntimeException("Error when saving image file!");
     }
 }

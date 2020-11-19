@@ -11,6 +11,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="/">Books</a>
             </li>
+            <#if isAdmin>
+                <li class="nav-item">
+                    <a class="nav-link" href="/author/new">Add new author</a>
+                </li>
+            </#if>
         </ul>
         <div class="navbar-text mr-3">
             ${username}

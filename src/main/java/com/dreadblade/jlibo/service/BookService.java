@@ -53,8 +53,8 @@ public class BookService {
         author.getBooks().add(book);
         book.setUploadedBy(uploadedBy);
 
-        FileUtil.saveBookFiles(imageFile, book, uploadPath);
-        FileUtil.saveBookFiles(bookFile, book, uploadPath);
+        book.setBookFilename(FileUtil.saveBookFile(bookFile, uploadPath));
+        book.setImageFilename(FileUtil.saveBookCoverFile(imageFile, uploadPath));
 
         bookRepo.save(book);
         return true;

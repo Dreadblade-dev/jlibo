@@ -23,6 +23,10 @@ public class AuthorService {
         return authorRepo.findByName(authorName);
     }
 
+    public Author findById(Long id) {
+        return authorRepo.findById(id).orElseGet(null);
+    }
+
     public boolean addAuthor(String name) {
         Author authorFromDb = authorRepo.findByName(name);
 
@@ -32,10 +36,15 @@ public class AuthorService {
 
         Author author = new Author();
         author.setName(name);
+        author.setDescription(name + "\'s biography");
         author.setBooks(new HashSet<>());
 
         authorRepo.save(author);
 
         return true;
+    }
+
+    public void updateAuthor(Author author) {
+        authorRepo.save(author);
     }
 }

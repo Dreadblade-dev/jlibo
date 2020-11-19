@@ -25,8 +25,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                     .antMatchers("/sign-up").not().fullyAuthenticated()
-                    .antMatchers("/author/edit/**").hasAuthority(Role.ADMIN.getAuthority())
-                    .antMatchers("/books/edit/**").hasAuthority(Role.ADMIN.getAuthority())
+                    .antMatchers("/author/new").hasAuthority(Role.ADMIN.getAuthority())
+                    .antMatchers("/author/**/edit").hasAuthority(Role.ADMIN.getAuthority())
+                    .antMatchers("/books/**/edit").hasAuthority(Role.ADMIN.getAuthority())
                     .antMatchers("/images/**").permitAll()
                     .antMatchers("/author/**").permitAll()
                     .antMatchers("/").permitAll()
