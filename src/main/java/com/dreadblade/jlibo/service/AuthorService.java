@@ -55,6 +55,12 @@ public class AuthorService {
         if (image != null && !image.isEmpty()) {
             String imageFilename = FileUtil.saveFile(image, uploadPath, FileUtil.TypeOfFile.AUTHOR_IMAGE);
             author.setImageFilename(imageFilename);
+        } else {
+            Author a = authorRepo.findById(author.getId()).orElse(null);
+
+            if (a != null) {
+                author.setImageFilename(a.getImageFilename());
+            }
         }
         authorRepo.save(author);
     }

@@ -22,7 +22,7 @@
         </ul>
         <div class="navbar-text mr-3">
             You are currently logged in as
-            <#if user??>
+            <#if currentUser??>
                 <a href="/user/${currentUserId}">${username}</a>
             <#else>
                 ${username}

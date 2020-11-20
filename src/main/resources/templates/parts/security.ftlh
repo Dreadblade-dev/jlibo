@@ -4,10 +4,10 @@
 
 <#if context>
     <#assign
-        user = Session.SPRING_SECURITY_CONTEXT.authentication.principal
-        username = user.getUsername()
-        currentUserId = user.getId()
-        isAdmin = user.isAdmin()
+        currentUser = Session.SPRING_SECURITY_CONTEXT.authentication.principal
+        username = currentUser.getUsername()
+        currentUserId = currentUser.getId()
+        isAdmin = currentUser.isAdmin()
     >
 <#else>
     <#assign

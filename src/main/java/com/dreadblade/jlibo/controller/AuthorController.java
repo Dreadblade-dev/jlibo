@@ -1,6 +1,8 @@
 package com.dreadblade.jlibo.controller;
 
 import com.dreadblade.jlibo.domain.Author;
+import com.dreadblade.jlibo.domain.Book;
+import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.AuthorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class AuthorController {
@@ -22,9 +26,25 @@ public class AuthorController {
     }
 
     @GetMapping("/author/{id}")
-    public String getAuthorPage(@PathVariable("id") Author author, Model model) {
+    public String getAuthorPage(@RequestParam(required = false, defaultValue = "") String filter,
+                                @PathVariable("id") Author author, Model model) {
         model.addAttribute("author", author);
         model.addAttribute("books", author.getBooks());
+        return "author";
+    }
+
+    @GetMapping("/author/{id}/filter")
+    public String getAuthorPageWithFilter(@RequestParam(required = false, defaultValue = "") String filter,
+                                        @PathVariable("id") Author author, Model model) {
+        model.addAttribute("author", author);
+
+        List<Book> books = author.getBooks().stream()
+                .filter(b -> b.getTitle().toLowerCase().contains(filter.toLowerCase()) ||
+                        b.getAuthor().getName().toLowerCase().contains(filter.toLowerCase()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("books", books);
+        model.addAttribute("filter", filter);
         return "author";
     }
 

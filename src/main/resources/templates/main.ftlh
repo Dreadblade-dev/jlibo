@@ -1,8 +1,8 @@
 <#import "parts/common.ftlh" as c>
-<@c.page>
-    <#if message??>
-        <p>${message}</p>
-    </#if>
+<#import "parts/bookFilter.ftlh" as f>
 
+<@c.page>
+
+    <@f.filterForm ""/>
     <#include "parts/bookList.ftlh">
 </@c.page>

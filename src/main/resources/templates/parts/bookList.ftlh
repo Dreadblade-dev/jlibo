@@ -24,6 +24,6 @@
             </#list>
         </div>
     <#else>
-        <h3>There are no books</h3>
+        <h5>There are no books</h5>
     </#if>
 </#if>

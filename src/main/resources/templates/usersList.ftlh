@@ -13,7 +13,7 @@
     <#list users as user>
         <tr <#if user.getId() == currentUserId>class="table-primary"</#if>>
             <td>${user.getId()}</td>
-            <td>${user.getUsername()}</td>
+            <td><a href="/user/${user.getId()}">${user.getUsername()}</a></td>
             <td>
                 <#list user.getRoles() as role>
                     ${role.name()}&nbsp

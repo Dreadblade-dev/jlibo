@@ -1,36 +1,43 @@
 <#import "parts/common.ftlh" as c>
+<#include "parts/security.ftlh">
 
 <@c.page>
     <div>
         <form method="post" enctype="multipart/form-data" action="/user/${user.getId()}/edit" class="container">
-            <div class="form-group row">
-                <label for="staticId" class="col-sm-2 col-form-label">Id</label>
-                <div class="col-sm-10">
-                    <input type="text" id="staticId" readonly value="${user.getId()}" class="form-control-plaintext" name="id">
+            <#if isAdmin>
+                <div class="form-group row">
+                    <label for="staticId" class="col-sm-2 col-form-label">Id</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="staticId" readonly value="${user.getId()}" class="form-control-plaintext" name="id">
+                    </div>
                 </div>
-            </div>
+                <#else>
+                <input type="hidden" value="${currentUserId}" name="id">
+            </#if>
             <div class="form-group row">
                 <label for="username" class="col-sm-2 col-form-label">Username</label>
                 <div class="col-sm-10">
                     <input type="text" id="username" name="username" value="${user.getUsername()}" class="form-control">
                 </div>
             </div>
-            <div class="form-group">
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="isActiveSwitch"
-                           name="isActive" <#if user.isActive()>checked</#if>
-                    >
-                    <label class="custom-control-label" for="isActiveSwitch">Active</label>
+            <#if isAdmin>
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="isActiveSwitch"
+                               name="isActive" <#if user.isActive()>checked</#if>
+                        >
+                        <label class="custom-control-label" for="isActiveSwitch">Active</label>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="isAdminSwitch"
-                           name="isAdmin" <#if user.isAdmin()>checked</#if>
-                    >
-                    <label class="custom-control-label" for="isAdminSwitch">Admin rules</label>
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="isAdminSwitch"
+                               name="isAdmin" <#if user.isAdmin()>checked</#if>
+                        >
+                        <label class="custom-control-label" for="isAdminSwitch">Admin rules</label>
+                    </div>
                 </div>
-            </div>
+            </#if>
 
             <div class="form-group">
                 <div class="custom-file">

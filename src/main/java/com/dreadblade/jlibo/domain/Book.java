@@ -23,6 +23,7 @@ public class Book {
     private Author author;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
     private User uploadedBy;
 
     private String imageFilename;

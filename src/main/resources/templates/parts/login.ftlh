@@ -48,10 +48,10 @@
 
 <#macro logout>
     <#include "security.ftlh">
-    <form action="<#if user??>/logout<#else>/login</#if>" method="post">
+    <form action="<#if currentUser??>/logout<#else>/login</#if>" method="post">
         <input type="hidden" name="_csrf" value="${_csrf.token}">
         <button type="submit" class="btn btn-primary">
-            <#if user??>
+            <#if currentUser??>
                 Sign out
                 <#else>
                 Sign in

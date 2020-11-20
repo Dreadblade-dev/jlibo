@@ -1,4 +1,5 @@
 <#import "parts/common.ftlh" as c>
+<#import "parts/bookFilter.ftlh" as f>
 <#include "parts/security.ftlh">
 <@c.page>
     <div class="mb-3">
@@ -17,6 +18,9 @@
         </div>
     </div>
     <#if isAdmin>
+        <#if message??>
+            <p>${message}</p>
+        </#if>
         <#include "parts/bookUploadForm.ftlh">
     </#if>
     <h3 class="mt-5">
@@ -24,5 +28,7 @@
             ${books?size} book<#if books?size gt 1 && books?size != 0>s</#if>:
         </#if>
     </h3>
+    <@f.filterForm "/author/${author.getId()}"/>
+
     <#include "parts/bookList.ftlh">
 </@c.page>

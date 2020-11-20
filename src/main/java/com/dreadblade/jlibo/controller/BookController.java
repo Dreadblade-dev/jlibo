@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class BookController {
@@ -33,6 +34,18 @@ public class BookController {
     public String getMainPage(Model model) {
         List<Book> books = bookService.findAll();
         model.addAttribute("books", books);
+        return "main";
+    }
+
+    @GetMapping("/filter")
+    public String getMainPageWithFilter(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
+        List<Book> books = bookService.findAll().stream()
+                .filter(b -> b.getTitle().toLowerCase().contains(filter.toLowerCase()) ||
+                        b.getAuthor().getName().toLowerCase().contains(filter.toLowerCase()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("books", books);
+        model.addAttribute("filter", filter);
         return "main";
     }
 

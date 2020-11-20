@@ -39,6 +39,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    @OneToMany(mappedBy = "uploadedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Book> uploadedBooks;
+
     public boolean isAdmin() {
         return roles.contains(Role.ADMIN);
     }

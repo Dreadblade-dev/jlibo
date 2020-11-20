@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -41,6 +42,7 @@ public class UserService implements UserDetailsService {
 
         user.setRoles(Collections.singleton(Role.USER));
         user.setActive(true);
+        user.setUploadedBooks(new HashSet<>());
 
         if (image != null && !image.isEmpty()) {
             String filename = FileUtil.saveFile(image, uploadPath, FileUtil.TypeOfFile.USER_IMAGE);
@@ -66,6 +68,10 @@ public class UserService implements UserDetailsService {
         if (image != null && !image.isEmpty()) {
             String filename = FileUtil.saveFile(image, uploadPath, FileUtil.TypeOfFile.USER_IMAGE);
             user.setImageFilename(filename);
+        }
+        User temp = userRepo.findById(user.getId()).orElse(null);
+        if (temp != null) {
+            user.setUploadedBooks(temp.getUploadedBooks());
         }
         userRepo.save(user);
     }

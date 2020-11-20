@@ -26,6 +26,7 @@
                     <label class="custom-file-label" for="imageFile">Choose author's photo file</label>
                 </div>
             </div>
+            <input type="hidden" name="id" value="${author.getId()}">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <div class="form-group">
                 <button type="submit" class="btn btn-primary mb-2">Save</button>
