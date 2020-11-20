@@ -1,3 +1,4 @@
+<div class="col-md-9">
 <div class="container justify-content-center align-items-center">
     <a class="btn btn-primary mb-3 mt-2" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
         Upload book
@@ -29,4 +30,5 @@
             </div>
         </form>
     </div>
+</div>
 </div>

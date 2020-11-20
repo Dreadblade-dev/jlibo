@@ -39,7 +39,7 @@ public class BookController {
     @GetMapping(value = "/book/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
     public @ResponseBody byte[] getBookFile(@PathVariable("id") Book book) {
         try {
-            String filename = uploadPath + "/books/" + book.getBookFilename();
+            String filename = uploadPath + "/books/books/" + book.getBookFilename();
             FileInputStream fis = new FileInputStream(filename);
             byte[] data = new byte[fis.available()];
             fis.read(data);

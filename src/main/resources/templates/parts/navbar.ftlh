@@ -21,7 +21,12 @@
             </#if>
         </ul>
         <div class="navbar-text mr-3">
-            You are currently logged in as ${username}
+            You are currently logged in as
+            <#if user??>
+                <a href="/user/${currentUserId}">${username}</a>
+            <#else>
+                ${username}
+            </#if>
         </div>
       <@l.logout/>
     </span>

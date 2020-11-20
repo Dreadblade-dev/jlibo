@@ -3,7 +3,7 @@
         <div class="container justify-content-center align-items-center card-columns">
             <#list books as book>
                 <div class="card" style="width: 18rem;">
-                    <a href="/book  /${book.getId()}">
+                    <a href="/book/${book.getId()}">
                         <img src="/images/book/${book.getImageFilename()}" class="card-img-top">
                     </a>
                     <div class="card-body">
@@ -13,12 +13,17 @@
                                 ${book.getAuthor().getName()}
                             </a>
                         </p>
-                        <p class="card-text">Uploaded by: ${book.getUploadedBy().getUsername()}</p>
+                        <p class="card-text">
+                            Uploaded by:
+                            <a href="/user/${book.getUploadedBy().getId()}">
+                                ${book.getUploadedBy().getUsername()}
+                            </a>
+                        </p>
                     </div>
                 </div>
             </#list>
         </div>
     <#else>
-        <p>There are no books, but you can upload some</p>
+        <h3>There are no books</h3>
     </#if>
 </#if>

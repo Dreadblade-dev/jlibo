@@ -1,6 +1,6 @@
 <#macro login path isSignUpForm>
     <div class="container justify-content-center align-items-center col-md-4">
-        <form action="${path}" method="post" class="form-group ">
+        <form action="${path}" method="post" class="form-group" <#if isSignUpForm>enctype="multipart/form-data"</#if>>
             <div class="form-group">
                 <input type="text" name="username" placeholder="Username" class="form-control">
             </div>
@@ -12,6 +12,13 @@
             <#if isSignUpForm>
                 <div class="form-group">
                     <input type="password" name="password_confirmation" placeholder="Confirm password" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" id="imageFile" name="image" class="form-control">
+                        <label class="custom-file-label" for="imageFile">Choose image file</label>
+                    </div>
                 </div>
             </#if>
 

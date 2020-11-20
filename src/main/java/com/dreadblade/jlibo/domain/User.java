@@ -2,11 +2,15 @@ package com.dreadblade.jlibo.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Set;
 
@@ -20,11 +24,15 @@ public class User implements UserDetails {
     private Long id;
 
     @NotBlank(message = "Username cannot be empty")
+    @Length(max = 32, message = "User's name is too long (more than 128)")
     private String username;
 
     @NotBlank(message = "Password cannot be empty")
+    @Length(max = 128, message = "User's password is too long (more than 128)")
+    @Length(min = 8, message = "User's password is less than 8 symbols")
     private String password;
     private boolean active;
+    private String imageFilename;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))

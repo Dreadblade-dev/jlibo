@@ -2,12 +2,13 @@
 <#include "parts/security.ftlh">
 
 <@c.page>
-    <table class="table table-hover">
+    <table class="table table-hover table-responsive-md">
         <thead>
             <th scope="col">Id</th>
             <th scope="col">Username</th>
             <th scope="col">Roles</th>
             <th scope="col">Active</th>
+            <th scope="col">Edit</th>
         </thead>
     <#list users as user>
         <tr <#if user.getId() == currentUserId>class="table-primary"</#if>>
@@ -19,6 +20,7 @@
                 </#list>
             </td>
             <td>${user.isActive()?string('yes', 'no')}</td>
+            <td><a href="/user/${user.getId()}/edit" class="btn btn-primary btn-sm">Edit</a></td>
         </tr>
     </#list>
     </table>

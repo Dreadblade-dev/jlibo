@@ -1,6 +1,5 @@
 package com.dreadblade.jlibo.util;
 
-import com.dreadblade.jlibo.domain.Book;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -8,14 +7,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class FileUtil {
-    private static final String BOOKS_DIRECTORY = "/books";
-    private static final String IMAGES_DIRECTORY = "/images";
-    private static final String AUTHOR_DIRECTORY = "/author";
-
-    public static enum TypeOfFile {
-        BOOK_FILE("/books"),
-        BOOK_IMAGE("/images"),
-        AUTHOR_IMAGE("/author");
+    public enum TypeOfFile {
+        BOOK_FILE("/books/books"),
+        BOOK_IMAGE("/books/images"),
+        AUTHOR_IMAGE("/author/images"),
+        USER_IMAGE("/user/images");
 
         private String directory;
 
@@ -28,8 +24,8 @@ public class FileUtil {
         }
     }
 
-    public static String saveFile(MultipartFile book, String uploadPath, TypeOfFile type) throws IOException {
-        if (book != null && !book.getOriginalFilename().isEmpty()) {
+    public static String saveFile(MultipartFile file, String uploadPath, TypeOfFile type) throws IOException {
+        if (file != null && !file.getOriginalFilename().isEmpty()) {
             File uploadDir = new File(uploadPath +type.getDirectory());
 
             if (!uploadDir.exists()) {
@@ -37,9 +33,9 @@ public class FileUtil {
             }
 
             String uuid = UUID.randomUUID().toString();
-            String resultFilename = uuid + "." + book.getOriginalFilename();
+            String resultFilename = uuid + "." + file.getOriginalFilename();
 
-            book.transferTo(new File(uploadDir.toString() + "/" + resultFilename));
+            file.transferTo(new File(uploadDir.toString() + "/" + resultFilename));
 
             return resultFilename;
         }

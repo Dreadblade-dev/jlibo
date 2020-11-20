@@ -13,9 +13,10 @@ import java.util.List;
 
 @Service
 public class AuthorService {
+    private final AuthorRepo authorRepo;
+
     @Value("${jlibo.upload.path}")
     private String uploadPath;
-    private final AuthorRepo authorRepo;
 
     public AuthorService(AuthorRepo authorRepo) {
         this.authorRepo = authorRepo;
