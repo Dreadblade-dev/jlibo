@@ -31,20 +31,16 @@ public class BookService {
         return bookRepo.findAll();
     }
 
-    public boolean addBook(String title, Author author, MultipartFile imageFile,
+    public boolean addBook(Book book, MultipartFile imageFile,
                         MultipartFile bookFile, User uploadedBy) throws IOException {
 
-        Book bookFromDb = bookRepo.findByTitleAndAuthor(title, author);
+        Book bookFromDb = bookRepo.findByTitleAndAuthor(book.getTitle(), book.getAuthor());
 
         if (bookFromDb != null) {
             return false;
         }
 
-        Book book = new Book();
-
-        book.setTitle(title);
-        book.setAuthor(author);
-        author.getBooks().add(book);
+        book.getAuthor().getBooks().add(book);
         book.setUploadedBy(uploadedBy);
 
         String bookFilename = FileUtil.saveFile(bookFile, uploadPath, FileUtil.TypeOfFile.BOOK_FILE);

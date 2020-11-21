@@ -4,10 +4,12 @@ import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.Role;
 import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.UserService;
+import com.dreadblade.jlibo.util.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -36,26 +39,51 @@ public class UserController {
     @PostMapping("/sign-up")
     public String signUp(
             @Valid User user,
+            BindingResult bindingResult,
             @RequestParam(name = "password_confirmation") String passwordConfirmation,
             @RequestParam MultipartFile image,
             Model model
     ) throws IOException {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
+            model.mergeAttributes(errors);
+        }
+
         if (passwordConfirmation == null || passwordConfirmation.isEmpty()) {
-            model.addAttribute("message", "Password confirmation cannot be empty");
+            model.addAttribute("passwordConfirmIsInvalid", "Password confirmation cannot be empty");
+        }
+
+        if (passwordConfirmation != null && !passwordConfirmation.equals(user.getPassword())) {
+            model.addAttribute("passwordIsInvalid", "Passwords are different!");
+        }
+
+        if (userService.isUserWithUsernameExists(user.getUsername())) {
+            model.addAttribute("usernameIsInvalid", "User already exists!");
+        }
+
+        if (model.asMap().size() > 0) {
+            model.addAttribute("user", user);
             return "sign-up";
         }
 
-        if (!passwordConfirmation.equals(user.getPassword())) {
-            model.addAttribute("message", "Passwords are different!");
-            return "sign-up";
-        }
-
-        if (!userService.addUser(user, image)) {
-            model.addAttribute("message", "User already exists!");
-            return "sign-up";
-        }
+        userService.addUser(user, image);
 
         return "redirect:/login";
+    }
+
+    @GetMapping("/activate/{code}")
+    public String activate(@PathVariable String code, Model model) {
+        boolean isActivated = userService.activateUser(code);
+
+        if (isActivated) {
+            model.addAttribute("message", "User successfully activated!");
+            model.addAttribute("messageType", "success");
+        } else {
+            model.addAttribute("message", "Activation code not found!");
+            model.addAttribute("messageType", "danger");
+        }
+
+        return "login";
     }
 
     @GetMapping("/users-list")

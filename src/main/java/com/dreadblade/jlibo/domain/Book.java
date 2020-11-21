@@ -3,8 +3,10 @@ package com.dreadblade.jlibo.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "books")
@@ -16,6 +18,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "Book's title cannot be empty")
+    @Length(max = 128, message = "Book's title is too long (more than 128)")
     private String title;
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -23,16 +24,22 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank(message = "Username cannot be empty")
-    @Length(max = 32, message = "User's name is too long (more than 128)")
+    @Length(max = 32, message = "User's name is too long (more than 128 symbols)")
+    @Length(min = 3, message = "User's name is too short (less than 3 symbols)")
+    @Column(unique = true)
     private String username;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Length(max = 128, message = "User's password is too long (more than 128)")
+    @Length(max = 128, message = "User's password is too long (more than 128 symbols)")
     @Length(min = 8, message = "User's password is less than 8 symbols")
     private String password;
     private boolean active;
     private String imageFilename;
+
+    @Email(message = "Email is not correct")
+    @NotBlank(message = "Email cannot be empty")
+    @Column(unique = true)
+    private String email;
+    private String activationCode;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
@@ -70,6 +77,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return active;
     }
-
-
 }

@@ -16,17 +16,23 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
+    private final MailService mailService;
 
     @Value("${jlibo.upload.path}")
     private String uploadPath;
 
+    @Value("${jlibo.host.name}")
+    private String hostname;
+
     @Autowired
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, MailService mailService) {
         this.userRepo = userRepo;
+        this.mailService = mailService;
     }
 
     public List<User> findAll() {
@@ -41,7 +47,7 @@ public class UserService implements UserDetailsService {
         }
 
         user.setRoles(Collections.singleton(Role.USER));
-        user.setActive(true);
+        user.setActivationCode(UUID.randomUUID().toString());
         user.setUploadedBooks(new HashSet<>());
 
         if (image != null && !image.isEmpty()) {
@@ -49,7 +55,36 @@ public class UserService implements UserDetailsService {
             user.setImageFilename(filename);
         }
 
+        user.setActive(false);
+        sendMessage(user);
+
         userRepo.save(user);
+        return true;
+    }
+
+    private void sendMessage(User user) {
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            String message = String.format("Hello, %s!\n" +
+                    "Welcome to Jlibo. To activate your account, please, follow the link below: %s/activate/%s",
+                    user.getUsername(),
+                    hostname,
+                    user.getActivationCode()
+            );
+
+            mailService.send(user.getEmail(), "Activation code", message);
+        }
+    }
+
+    public boolean activateUser(String code) {
+        User user = userRepo.findByActivationCode(code);
+
+        if (user == null) {
+            return false;
+        }
+        user.setActive(true);
+
+        userRepo.save(user);
+
         return true;
     }
 
@@ -78,5 +113,12 @@ public class UserService implements UserDetailsService {
 
     public User findById(Long id) {
         return userRepo.findById(id).orElseGet(null);
+    }
+
+    public boolean isUserWithUsernameExists(String username) {
+        if (userRepo.findByUsername(username) != null) {
+            return true;
+        }
+        return false;
     }
 }

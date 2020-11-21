@@ -4,18 +4,22 @@ import com.dreadblade.jlibo.domain.Author;
 import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.BookService;
+import com.dreadblade.jlibo.util.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -64,14 +68,33 @@ public class BookController {
     }
 
     @PostMapping("/book/new")
-    public String addBook(@RequestParam String title,
+    public String addBook(@Valid Book book,
+                          BindingResult bindingResult,
                           @RequestParam("author_id") Author author,
-                          @RequestParam MultipartFile image,
-                          @RequestParam MultipartFile book,
+                          @RequestParam MultipartFile imageFile,
+                          @RequestParam MultipartFile bookFile,
                           @AuthenticationPrincipal User uploadedBy,
                           Model model
     ) throws IOException {
-        boolean isBookAdded = bookService.addBook(title, author, image, book, uploadedBy);
+        if (bindingResult.hasErrors() || imageFile == null || imageFile.isEmpty() ||
+                bookFile == null || bookFile.isEmpty()) {
+            Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
+            model.mergeAttributes(errors);
+            if (imageFile == null || imageFile.isEmpty()) {
+                model.addAttribute("imageFilenameIsInvalid", "Book's cover image cannot be empty");
+            }
+            if (bookFile == null || bookFile.isEmpty()) {
+                model.addAttribute("bookFilenameIsInvalid", "Book file cannot be empty");
+            }
+
+            model.addAttribute("title", book.getTitle());
+            model.addAttribute("author", author);
+            model.addAttribute("books", author.getBooks());
+            return "author";
+        }
+
+        book.setAuthor(author);
+        boolean isBookAdded = bookService.addBook(book, imageFile, bookFile, uploadedBy);
 
         if (!isBookAdded) {
             model.addAttribute("message", "This book already exists!");

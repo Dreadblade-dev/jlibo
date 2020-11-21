@@ -2,16 +2,47 @@
     <div class="container justify-content-center align-items-center col-md-4">
         <form action="${path}" method="post" class="form-group" <#if isSignUpForm>enctype="multipart/form-data"</#if>>
             <div class="form-group">
-                <input type="text" name="username" placeholder="Username" class="form-control">
+                <input type="text" name="username" placeholder="Username"
+                       class="form-control <#if usernameIsInvalid??>is-invalid</#if>"
+                       <#if user?? && user.getUsername()??>value="${user.getUsername()}"</#if>>
+                <#if usernameIsInvalid??>
+                    <div class="invalid-feedback">
+                        ${usernameIsInvalid}
+                    </div>
+                </#if>
             </div>
 
             <div class="form-group">
-                <input type="password" name="password" placeholder="Password" class="form-control">
+                <input type="password" name="password" placeholder="Password"
+                       class="form-control <#if passwordIsInvalid??>is-invalid</#if>">
+                <#if passwordIsInvalid??>
+                    <div class="invalid-feedback">
+                        ${passwordIsInvalid}
+                    </div>
+                </#if>
             </div>
 
             <#if isSignUpForm>
                 <div class="form-group">
-                    <input type="password" name="password_confirmation" placeholder="Confirm password" class="form-control">
+                    <input type="password" name="password_confirmation" placeholder="Confirm password"
+                           class="form-control <#if passwordConfirmIsInvalid??>is-invalid</#if>">
+                    <#if passwordConfirmIsInvalid??>
+                        <div class="invalid-feedback">
+                            ${passwordConfirmIsInvalid}
+                        </div>
+                    </#if>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="email@example.com" class="form-control
+                           <#if emailIsInvalid??>is-invalid</#if>"<#if user?? && user.getEmail()??>
+                                value="${user.getEmail()}"
+                           </#if>>
+                    <#if emailIsInvalid??>
+                        <div class="invalid-feedback">
+                            ${emailIsInvalid}
+                        </div>
+                    </#if>
                 </div>
 
                 <div class="form-group">
@@ -48,14 +79,14 @@
 
 <#macro logout>
     <#include "security.ftlh">
-    <form action="<#if currentUser??>/logout<#else>/login</#if>" method="post">
-        <input type="hidden" name="_csrf" value="${_csrf.token}">
-        <button type="submit" class="btn btn-primary">
-            <#if currentUser??>
+    <#if currentUser??>
+        <form action="/logout" method="post">
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+            <button type="submit" class="btn btn-primary">
                 Sign out
-                <#else>
-                Sign in
-            </#if>
-        </button>
-    </form>
+            </button>
+        </form>
+        <#else>
+        <a href="/login" class="btn btn-primary">Sign in</a>
+    </#if>
 </#macro>

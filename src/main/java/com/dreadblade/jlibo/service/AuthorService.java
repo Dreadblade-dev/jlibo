@@ -34,17 +34,19 @@ public class AuthorService {
         return authorRepo.findById(id).orElseGet(null);
     }
 
-    public boolean addAuthor(String name) {
-        Author authorFromDb = authorRepo.findByName(name);
+    public boolean addAuthor(Author author, MultipartFile image) throws IOException {
+        Author authorFromDb = authorRepo.findByName(author.getName());
 
         if (authorFromDb != null) {
             return false;
         }
 
-        Author author = new Author();
-        author.setName(name);
-        author.setDescription("<" + name + "\'s biography>");
+        if (image != null && !image.isEmpty()) {
+            String imageFilename = FileUtil.saveFile(image, uploadPath, FileUtil.TypeOfFile.AUTHOR_IMAGE);
+            author.setImageFilename(imageFilename);
+        }
         author.setBooks(new HashSet<>());
+
 
         authorRepo.save(author);
 

@@ -1,23 +1,34 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
     <div class="container justify-content-center align-items-center">
-        <form method="post" enctype="multipart/form-data" action="/author/${author.getId()}/edit">
+        <form method="post" enctype="multipart/form-data"
+              action="/author/<#if author?? && author.getId()??>${author.getId()}/edit<#else>new</#if>">
             <div class="form-group row">
                 <label for="name" class="col-sm-2 col-form-label">Author's name</label>
                 <div class="col-sm-10">
                     <input type="text" id="name" placeholder="Author's name"
-                           <#if author.getName() != "<author's name>">
+                           <#if author?? && author.getName()??>
                                value="${author.getName()}"
                            </#if>
-                           name="name" class="form-control">
+                           name="name" class="form-control <#if nameIsInvalid??>is-invalid</#if>">
+                    <#if nameIsInvalid??>
+                        <div class="invalid-feedback">
+                            ${nameIsInvalid}
+                        </div>
+                    </#if>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="name" class="col-sm-2 col-form-label">Author's biography</label>
                 <div class="col-sm-10">
-                    <textarea name="description" class="form-control" placeholder="Author's biography"
-                    ><#if author.getDescription() != "<<author's name>'s biography>"
-                        >${author.getDescription()}</#if></textarea>
+                    <textarea name="description" class="form-control <#if descriptionIsInvalid??>is-invalid</#if>"
+                              placeholder="Author's biography"
+                    ><#if author?? && author.getDescription()??>${author.getDescription()}</#if></textarea>
+                    <#if descriptionIsInvalid??>
+                        <div class="invalid-feedback">
+                            ${descriptionIsInvalid}
+                        </div>
+                    </#if>
                 </div>
             </div>
             <div class="form-group">
@@ -26,7 +37,9 @@
                     <label class="custom-file-label" for="imageFile">Choose author's photo file</label>
                 </div>
             </div>
-            <input type="hidden" name="id" value="${author.getId()}">
+            <#if author?? && author.getId()??>
+                <input type="hidden" name="id" value="${author.getId()}">
+            </#if>
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <div class="form-group">
                 <button type="submit" class="btn btn-primary mb-2">Save</button>
