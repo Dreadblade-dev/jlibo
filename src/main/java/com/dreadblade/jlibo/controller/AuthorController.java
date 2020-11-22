@@ -29,8 +29,7 @@ public class AuthorController {
     }
 
     @GetMapping("/author/{id}")
-    public String getAuthorPage(@RequestParam(required = false, defaultValue = "") String filter,
-                                @PathVariable("id") Author author, Model model) {
+    public String getAuthorPage(@PathVariable("id") Author author, Model model) {
         model.addAttribute("author", author);
         model.addAttribute("books", author.getBooks());
         return "author";
@@ -93,13 +92,19 @@ public class AuthorController {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
             model.mergeAttributes(errors);
-        }
-
-        if (model.asMap().size() > 2) {
             return "authorEdit";
         }
 
         authorService.updateAuthor(author, image);
         return "redirect:/author/" + author.getId();
+    }
+
+    @PostMapping("/author/{id}/delete")
+    public String deleteAuthor(@PathVariable("id") Author author) {
+        if (author != null) {
+            authorService.deleteById(author.getId());
+        }
+
+        return "redirect:/";
     }
 }

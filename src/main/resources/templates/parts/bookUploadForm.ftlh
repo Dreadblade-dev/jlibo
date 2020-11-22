@@ -21,7 +21,7 @@
                 <div class="custom-file">
                     <input type="file" id="imageFile" name="imageFile"
                            class="custom-file-input <#if imageFilenameIsInvalid??>is-invalid</#if>">
-                    <label class="custom-file-label" for="imageFile">Choose image</label>
+                    <label class="custom-file-label" for="imageFile">Choose book's cover image</label>
                     <#if imageFilenameIsInvalid??>
                         <div class="invalid-feedback">
                             ${imageFilenameIsInvalid}

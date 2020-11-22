@@ -80,6 +80,7 @@ public class BookController {
                 bookFile == null || bookFile.isEmpty()) {
             Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
             model.mergeAttributes(errors);
+
             if (imageFile == null || imageFile.isEmpty()) {
                 model.addAttribute("imageFilenameIsInvalid", "Book's cover image cannot be empty");
             }
@@ -103,5 +104,70 @@ public class BookController {
         List<Book> books = bookService.findAll();
         model.addAttribute("books", books);
         return "redirect:/author/" + author.getId();
+    }
+
+    @GetMapping("/book/{id}/edit")
+    public String getBookEditPage(@PathVariable("id") Book book, Model model) {
+        model.addAttribute("book", book);
+        return "bookEdit";
+    }
+
+    @PostMapping("/book/{id}/edit")
+    public String updateBook(@Valid Book book, BindingResult bindingResult,
+                             @RequestParam("author_id") Author author,
+                             @RequestParam MultipartFile imageFile,
+                             @RequestParam MultipartFile bookFile,
+                             Model model) throws IOException {
+        Book temp = bookService.findById(book.getId());
+
+        if (temp == null) {
+            return "redirect:/author/" + author.getId();
+        }
+        int errorsCount = 0;
+        book.setAuthor(author);
+        book.setUploadedBy(temp.getUploadedBy());
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
+            model.mergeAttributes(errors);
+
+            errorsCount += errors.size();
+        }
+
+        if (imageFile == null || imageFile.isEmpty()) {
+            if (temp.getImageFilename() == null || temp.getImageFilename().isEmpty()) {
+                model.addAttribute("imageFilenameIsInvalid", "Book's cover image cannot be empty");
+                errorsCount++;
+            } else {
+                book.setImageFilename(temp.getImageFilename());
+            }
+        }
+        if (bookFile == null || bookFile.isEmpty()) {
+            if (temp.getBookFilename() == null || temp.getBookFilename().isEmpty()) {
+                model.addAttribute("bookFilenameIsInvalid", "Book file cannot be empty");
+                errorsCount++;
+            } else {
+                book.setBookFilename(temp.getBookFilename());
+            }
+        }
+
+        if (errorsCount > 0) {
+            model.addAttribute("book", book);
+            return "bookEdit";
+        }
+
+        bookService.updateBook(book, imageFile, bookFile);
+
+        return "redirect:/author/" + author.getId();
+    }
+
+    @PostMapping("/book/{id}/delete")
+    public String deleteBook(@PathVariable("id") Book book) {
+        if (book != null) {
+            bookService.deleteBookById(book.getId());
+            return "redirect:/author/" + book.getAuthor().getId();
+        }
+
+        return "redirect:/";
     }
 }

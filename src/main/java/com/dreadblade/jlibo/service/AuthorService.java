@@ -66,4 +66,10 @@ public class AuthorService {
         }
         authorRepo.save(author);
     }
+
+    public void deleteById(Long id) {
+        if (authorRepo.findById(id).orElse(null) != null) {
+            authorRepo.deleteById(id);
+        }
+    }
 }

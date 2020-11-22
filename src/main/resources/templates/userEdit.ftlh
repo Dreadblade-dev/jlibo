@@ -51,6 +51,14 @@
                 <button type="submit" class="btn btn-primary">
                     Save
                 </button>
+                <button type="submit" formaction="/user/${user.getId()}/delete"
+                        class="btn btn-danger float-right">
+                    <#if isAdmin && currentUserId != user.getId()>
+                        Delete
+                        <#else>
+                        Deactivate my account
+                    </#if>
+                </button>
             </div>
         </form>
     </div>

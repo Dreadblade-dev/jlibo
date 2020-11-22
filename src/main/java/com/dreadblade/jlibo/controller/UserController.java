@@ -44,24 +44,35 @@ public class UserController {
             @RequestParam MultipartFile image,
             Model model
     ) throws IOException {
+        int errorsCount = 0;
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
             model.mergeAttributes(errors);
+
+            errorsCount += errors.size();
         }
 
         if (passwordConfirmation == null || passwordConfirmation.isEmpty()) {
             model.addAttribute("passwordConfirmIsInvalid", "Password confirmation cannot be empty");
+            errorsCount++;
         }
 
         if (passwordConfirmation != null && !passwordConfirmation.equals(user.getPassword())) {
             model.addAttribute("passwordIsInvalid", "Passwords are different!");
+            errorsCount++;
+        }
+
+        if (userService.isUserWithEmailExists(user.getEmail())) {
+            model.addAttribute("emailIsInvalid", "This email already in use!");
+            errorsCount++;
         }
 
         if (userService.isUserWithUsernameExists(user.getUsername())) {
             model.addAttribute("usernameIsInvalid", "User already exists!");
+            errorsCount++;
         }
 
-        if (model.asMap().size() > 0) {
+        if (errorsCount > 0) {
             model.addAttribute("user", user);
             return "sign-up";
         }

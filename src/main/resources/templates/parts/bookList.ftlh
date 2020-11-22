@@ -1,3 +1,4 @@
+<#include "security.ftlh">
 <#if books??>
     <#if books?size gt 0>
         <div class="container justify-content-center align-items-center card-columns">
@@ -7,7 +8,12 @@
                         <img src="/images/book/${book.getImageFilename()}" class="card-img-top">
                     </a>
                     <div class="card-body">
-                        <h5 class="card-title">${book.getTitle()}</h5>
+                        <h5 class="card-title">
+                            ${book.getTitle()}
+                            <#if isAdmin>
+                                <a href="/book/${book.getId()}/edit" class="btn btn-primary">Edit</a>
+                            </#if>
+                        </h5>
                         <p class="card-text">
                             <a href="/author/${book.getAuthor().getId()}">
                                 ${book.getAuthor().getName()}

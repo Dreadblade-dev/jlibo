@@ -31,6 +31,10 @@ public class BookService {
         return bookRepo.findAll();
     }
 
+    public Book findById(Long id) {
+        return bookRepo.findById(id).orElse(null);
+    }
+
     public boolean addBook(Book book, MultipartFile imageFile,
                         MultipartFile bookFile, User uploadedBy) throws IOException {
 
@@ -51,5 +55,25 @@ public class BookService {
 
         bookRepo.save(book);
         return true;
+    }
+
+    public void updateBook(Book book, MultipartFile imageFile, MultipartFile bookFile) throws IOException {
+        if (bookFile != null && !bookFile.isEmpty()) {
+            String bookFilename = FileUtil.saveFile(bookFile, uploadPath, FileUtil.TypeOfFile.BOOK_FILE);
+            book.setBookFilename(bookFilename);
+        }
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageFilename = FileUtil.saveFile(imageFile, uploadPath, FileUtil.TypeOfFile.BOOK_IMAGE);
+            book.setImageFilename(imageFilename);
+        }
+
+        bookRepo.save(book);
+    }
+
+    public void deleteBookById(Long id) {
+        if (bookRepo.findById(id).orElse(null) != null) {
+            bookRepo.deleteById(id);
+        }
     }
 }

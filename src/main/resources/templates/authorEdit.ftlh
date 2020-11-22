@@ -37,12 +37,17 @@
                     <label class="custom-file-label" for="imageFile">Choose author's photo file</label>
                 </div>
             </div>
-            <#if author?? && author.getId()??>
-                <input type="hidden" name="id" value="${author.getId()}">
-            </#if>
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <div class="form-group">
-                <button type="submit" class="btn btn-primary mb-2">Save</button>
+                <button type="submit" class="btn btn-primary mb-2">
+                    Save
+                </button>
+                <#if author?? && author.getId()??>
+                    <button type="submit" formaction="/author/${author.getId()}/delete"
+                            class="btn btn-danger mb-2 float-right">
+                        Delete
+                    </button>
+                </#if>
             </div>
         </form>
     </div>

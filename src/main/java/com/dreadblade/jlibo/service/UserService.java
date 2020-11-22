@@ -121,4 +121,11 @@ public class UserService implements UserDetailsService {
         }
         return false;
     }
+
+    public boolean isUserWithEmailExists(String email) {
+        if (userRepo.findByEmail(email) != null) {
+            return true;
+        }
+        return false;
+    }
 }
