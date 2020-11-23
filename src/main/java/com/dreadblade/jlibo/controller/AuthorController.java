@@ -5,6 +5,7 @@ import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.AuthorService;
 import com.dreadblade.jlibo.util.ControllerUtils;
+import org.dom4j.rule.Mode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -106,5 +107,13 @@ public class AuthorController {
         }
 
         return "redirect:/";
+    }
+
+    @GetMapping("/authors-list")
+    public String getAuthorsList(Model model) {
+        List<Author> authors = authorService.findAll();
+        model.addAttribute("authors", authors);
+
+        return "authorsList";
     }
 }
