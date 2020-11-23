@@ -1,8 +1,10 @@
 package com.dreadblade.jlibo.controller;
 
+import com.dreadblade.jlibo.config.RecaptchaConfig;
 import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.Role;
 import com.dreadblade.jlibo.domain.User;
+import com.dreadblade.jlibo.domain.dto.RecaptchaResponseDto;
 import com.dreadblade.jlibo.service.UserService;
 import com.dreadblade.jlibo.util.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,25 +16,39 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
+    private static final String RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
+
     private final UserService userService;
+    private final RecaptchaConfig recaptchaConfig;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecaptchaConfig recaptchaConfig, RestTemplate restTemplate) {
         this.userService = userService;
+        this.recaptchaConfig = recaptchaConfig;
+        this.restTemplate = restTemplate;
+    }
+
+    @GetMapping("/login")
+    public String getLoginPage(Model model) {
+        return "login";
     }
 
     @GetMapping("/sign-up")
-    public String getSignUpPage() {
+    public String getSignUpPage(Model model) {
+        model.addAttribute("recaptcha", recaptchaConfig);
         return "sign-up";
     }
 
@@ -41,10 +57,20 @@ public class UserController {
             @Valid User user,
             BindingResult bindingResult,
             @RequestParam(name = "password_confirmation") String passwordConfirmation,
+            @RequestParam(name = "g-recaptcha-response") String recaptchaResponse,
             @RequestParam MultipartFile image,
             Model model
     ) throws IOException {
         int errorsCount = 0;
+
+        String url = String.format(RECAPTCHA_URL, recaptchaConfig.getSecretKey(), recaptchaResponse);
+        RecaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), RecaptchaResponseDto.class);
+
+        if (!response.isSuccess()) {
+            model.addAttribute("recaptchaError", "Recaptcha is invalid");
+            errorsCount++;
+        }
+
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
             model.mergeAttributes(errors);
@@ -74,6 +100,7 @@ public class UserController {
 
         if (errorsCount > 0) {
             model.addAttribute("user", user);
+            model.addAttribute("recaptcha", recaptchaConfig);
             return "sign-up";
         }
 
@@ -93,6 +120,8 @@ public class UserController {
             model.addAttribute("message", "Activation code not found!");
             model.addAttribute("messageType", "danger");
         }
+
+        model.addAttribute("recaptcha", recaptchaConfig);
 
         return "login";
     }
@@ -167,5 +196,15 @@ public class UserController {
         model.addAttribute("books", books);
         model.addAttribute("filter", filter);
         return "user";
+    }
+
+    @PostMapping("/user/{id}/delete")
+    public String deleteUser(@PathVariable("id") User u,
+                             @AuthenticationPrincipal User user) {
+        userService.deleteById(u.getId());
+        if (user.isAdmin() && !user.getId().equals(u.getId())) {
+            return "redirect:/users-list";
+        }
+        return "redirect:/";
     }
 }

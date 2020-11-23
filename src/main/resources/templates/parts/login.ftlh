@@ -55,6 +55,19 @@
 
             <input type="hidden" name="_csrf" value="${_csrf.token}">
 
+            <#if isSignUpForm>
+                <div class="container justify-content-center align-items-center mb-3">
+                    <div class="g-recaptcha" data-sitekey="${recaptcha.getSiteKey()}"></div>
+                    <#if recaptchaError??>
+                        <div class="text-danger">
+                            ${recaptchaError}
+                        </div>
+                    </#if>
+                </div>
+
+            </#if>
+
+
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
                     <#if isSignUpForm>
@@ -75,6 +88,7 @@
             </a>
         </#if>
     </div>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </#macro>
 
 <#macro logout>

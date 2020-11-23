@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
     private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${jlibo.upload.path}")
     private String uploadPath;
@@ -30,9 +32,10 @@ public class UserService implements UserDetailsService {
     private String hostname;
 
     @Autowired
-    public UserService(UserRepo userRepo, MailService mailService) {
+    public UserService(UserRepo userRepo, MailService mailService, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.mailService = mailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> findAll() {
@@ -56,6 +59,7 @@ public class UserService implements UserDetailsService {
         }
 
         user.setActive(false);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         sendMessage(user);
 
         userRepo.save(user);
@@ -109,6 +113,10 @@ public class UserService implements UserDetailsService {
             user.setUploadedBooks(temp.getUploadedBooks());
         }
         userRepo.save(user);
+    }
+
+    public void deleteById(Long id) {
+        userRepo.deleteById(id);
     }
 
     public User findById(Long id) {
