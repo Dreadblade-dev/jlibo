@@ -24,8 +24,8 @@
         <#include "parts/bookUploadForm.ftlh">
     </#if>
     <h3 class="mt-5">
-        <#if books?size gt 0>
-            ${books?size} book<#if books?size gt 1 && books?size != 0>s</#if>:
+        <#if page.getContent()?size gt 0>
+            ${page.getContent()?size} book<#if page.getContent()?size gt 1 && page.getContent()?size != 0>s</#if>:
         </#if>
     </h3>
     <@f.filterForm "/author/${author.getId()}"/>

@@ -7,11 +7,12 @@ import com.dreadblade.jlibo.repo.BookRepo;
 import com.dreadblade.jlibo.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
 public class BookService {
@@ -27,12 +28,24 @@ public class BookService {
         this.authorService = authorService;
     }
 
-    public List<Book> findAll() {
-        return bookRepo.findAll();
+    public Page<Book> findAll(Pageable pageable, String filter) {
+        if (filter == null || filter.isEmpty()) {
+            return bookRepo.findAll(pageable);
+        }
+
+        return bookRepo.findAllContainsFilter(pageable, filter);
     }
 
     public Book findById(Long id) {
         return bookRepo.findById(id).orElse(null);
+    }
+
+    public Page<Book> findByAuthor(Pageable pageable, Author author, String filter) {
+        return bookRepo.findByAuthorContainsFilter(pageable, author, filter);
+    }
+
+    public Page<Book> findByUser(Pageable pageable, User user, String filter) {
+        return bookRepo.findByUserContainsFilter(pageable, user, filter);
     }
 
     public boolean addBook(Book book, MultipartFile imageFile,

@@ -2,10 +2,13 @@ package com.dreadblade.jlibo.controller;
 
 import com.dreadblade.jlibo.domain.Author;
 import com.dreadblade.jlibo.domain.Book;
-import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.service.AuthorService;
+import com.dreadblade.jlibo.service.BookService;
 import com.dreadblade.jlibo.util.ControllerUtils;
-import org.dom4j.rule.Mode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,38 +22,37 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class AuthorController {
     private final AuthorService authorService;
+    private final BookService bookService;
 
-    public AuthorController(AuthorService authorService) {
+    public AuthorController(AuthorService authorService, BookService bookService) {
         this.authorService = authorService;
+        this.bookService = bookService;
     }
 
     @GetMapping("/author/{id}")
-    public String getAuthorPage(@PathVariable("id") Author author, Model model) {
-        model.addAttribute("author", author);
-        model.addAttribute("books", author.getBooks());
-        return "author";
-    }
+    public String getAuthorPage(
+            @PathVariable("id") Author author,
+            @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false, defaultValue = "") String filter,
+            Model model
+    ) {
+        Page<Book> page = bookService.findByAuthor(pageable, author, filter);
 
-    @GetMapping("/author/{id}/filter")
-    public String getAuthorPageWithFilter(@RequestParam(required = false, defaultValue = "") String filter,
-                                        @PathVariable("id") Author author, Model model) {
-        model.addAttribute("author", author);
-
-        List<Book> books = author.getBooks().stream()
-                .filter(b -> b.getTitle().toLowerCase().contains(filter.toLowerCase()) ||
-                        b.getAuthor().getName().toLowerCase().contains(filter.toLowerCase()))
-                .collect(Collectors.toList());
-
-        model.addAttribute("books", books);
         model.addAttribute("filter", filter);
+        model.addAttribute("page", page);
+        if (filter == null || filter.isEmpty()) {
+            model.addAttribute("url", "/author/" + author.getId());
+        } else {
+            model.addAttribute("url", "/author/" + author.getId() + "?filter=" + filter);
+        }
+
+        model.addAttribute("author", author);
         return "author";
     }
-
     @GetMapping("/author/new")
     public String getAddAuthorPage() {
         return "authorEdit";

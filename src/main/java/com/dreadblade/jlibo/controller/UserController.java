@@ -5,9 +5,14 @@ import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.Role;
 import com.dreadblade.jlibo.domain.User;
 import com.dreadblade.jlibo.domain.dto.RecaptchaResponseDto;
+import com.dreadblade.jlibo.service.BookService;
 import com.dreadblade.jlibo.service.UserService;
 import com.dreadblade.jlibo.util.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,19 +29,20 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
     private static final String RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
 
     private final UserService userService;
+    private final BookService bookService;
     private final RecaptchaConfig recaptchaConfig;
     private final RestTemplate restTemplate;
 
     @Autowired
-    public UserController(UserService userService, RecaptchaConfig recaptchaConfig, RestTemplate restTemplate) {
+    public UserController(UserService userService, BookService bookService, RecaptchaConfig recaptchaConfig, RestTemplate restTemplate) {
         this.userService = userService;
+        this.bookService = bookService;
         this.recaptchaConfig = recaptchaConfig;
         this.restTemplate = restTemplate;
     }
@@ -64,7 +70,8 @@ public class UserController {
         int errorsCount = 0;
 
         String url = String.format(RECAPTCHA_URL, recaptchaConfig.getSecretKey(), recaptchaResponse);
-        RecaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), RecaptchaResponseDto.class);
+        RecaptchaResponseDto response = restTemplate.postForObject(
+                url, Collections.emptyList(), RecaptchaResponseDto.class);
 
         if (!response.isSuccess()) {
             model.addAttribute("recaptchaError", "Recaptcha is invalid");
@@ -176,25 +183,21 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public String getUserPage(@RequestParam(required = false, defaultValue = "") String filter,
-                              @PathVariable("id") User user, Model model) {
+    public String getUserPage(
+            @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false, defaultValue = "") String filter,
+            @PathVariable("id") User user, Model model
+    ) {
+        Page<Book> page = bookService.findByUser(pageable, user, filter);
+
         model.addAttribute("user", user);
-        model.addAttribute("books", user.getUploadedBooks());
-        return "user";
-    }
-
-    @GetMapping("/user/{id}/filter")
-    public String getUserPageWithFilter(@RequestParam(required = false, defaultValue = "") String filter,
-                                        @PathVariable("id") User user, Model model) {
-        model.addAttribute("user", user);
-
-        List<Book> books = user.getUploadedBooks().stream()
-                .filter(b -> b.getTitle().toLowerCase().contains(filter.toLowerCase()) ||
-                        b.getAuthor().getName().toLowerCase().contains(filter.toLowerCase()))
-                .collect(Collectors.toList());
-
-        model.addAttribute("books", books);
         model.addAttribute("filter", filter);
+        model.addAttribute("page", page);
+        if (filter == null || filter.isEmpty()) {
+            model.addAttribute("url", "/user/" + user.getId());
+        } else {
+            model.addAttribute("url", "/user/" + user.getId() + "?filter=" + filter);
+        }
         return "user";
     }
 

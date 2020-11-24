@@ -7,6 +7,10 @@ import com.dreadblade.jlibo.service.BookService;
 import com.dreadblade.jlibo.util.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,9 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class BookController {
@@ -35,21 +37,19 @@ public class BookController {
     }
 
     @GetMapping("/")
-    public String getMainPage(Model model) {
-        List<Book> books = bookService.findAll();
-        model.addAttribute("books", books);
-        return "main";
-    }
+    public String getMainPage(@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+                              @RequestParam(required = false, defaultValue = "") String filter,
+                              Model model) {
+        Page<Book> page = bookService.findAll(pageable, filter);
 
-    @GetMapping("/filter")
-    public String getMainPageWithFilter(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
-        List<Book> books = bookService.findAll().stream()
-                .filter(b -> b.getTitle().toLowerCase().contains(filter.toLowerCase()) ||
-                        b.getAuthor().getName().toLowerCase().contains(filter.toLowerCase()))
-                .collect(Collectors.toList());
-
-        model.addAttribute("books", books);
         model.addAttribute("filter", filter);
+        model.addAttribute("page", page);
+        if (filter == null || filter.isEmpty()) {
+            model.addAttribute("url", "/");
+        } else {
+            model.addAttribute("url", "/?filter=" + filter);
+        }
+
         return "main";
     }
 
@@ -68,7 +68,8 @@ public class BookController {
     }
 
     @PostMapping("/book/new")
-    public String addBook(@Valid Book book,
+    public String addBook(@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+                          @Valid Book book,
                           BindingResult bindingResult,
                           @RequestParam("author_id") Author author,
                           @RequestParam MultipartFile imageFile,
@@ -101,8 +102,8 @@ public class BookController {
             model.addAttribute("message", "This book already exists!");
         }
 
-        List<Book> books = bookService.findAll();
-        model.addAttribute("books", books);
+        Page<Book> page = bookService.findAll(pageable, null);
+        model.addAttribute("page", page);
         return "redirect:/author/" + author.getId();
     }
 
