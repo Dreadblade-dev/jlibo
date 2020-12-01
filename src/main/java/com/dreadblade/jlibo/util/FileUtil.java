@@ -26,7 +26,7 @@ public class FileUtil {
 
     public static String saveFile(MultipartFile file, String uploadPath, TypeOfFile type) throws IOException {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath +type.getDirectory());
+            File uploadDir = new File(uploadPath + type.getDirectory());
 
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();

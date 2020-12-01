@@ -11,7 +11,7 @@
         </h1>
         <#if author.getImageFilename()??>
             <img src="/images/author/${author.getImageFilename()}" class="rounded float-right col-md-4 mb-5"
-                 style="height: 300px; width: auto;">
+                 style="height: 300px; width: auto;"/>
         </#if>
         <div class="col-md-8 d-inline-block">
             <p>${author.getDescription()}</p>

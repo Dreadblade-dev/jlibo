@@ -32,6 +32,5 @@
             </#if>
         </div>
       <@l.logout/>
-    </span>
     </div>
 </nav>

@@ -3,12 +3,12 @@
 <@p.pager url page/>
     <#if page.getContent()??>
         <#if page.getContent()?size gt 0>
-            <div class="container justify-content-center align-items-center card-columns">
+            <div class="container justify-content-center align-items-center card-columns" id="books-list">
                 <#list page.getContent() as book>
                     <#if book??>
-                        <div class="card" style="width: 18rem;">
+                        <div class="card" style="width: 18rem;" data-id="${book.getId()}">
                             <a href="/book/${book.getId()}">
-                                <img src="/images/book/${book.getImageFilename()}" class="card-img-top">
+                                <img src="/images/book/${book.getImageFilename()}" class="card-img-top"/>
                             </a>
                             <div class="card-body">
                                 <h5 class="card-title">
