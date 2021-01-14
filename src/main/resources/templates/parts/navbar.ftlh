@@ -19,6 +19,9 @@
                     <a class="nav-link" href="/authors-list">Authors list</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/book/suggested">Suggested books</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/users-list">Users list</a>
                 </li>
             </#if>

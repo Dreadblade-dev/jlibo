@@ -22,6 +22,8 @@ public class Book {
     @Length(max = 128, message = "Book's title is too long (more than 128)")
     private String title;
 
+    private boolean isAccepted;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;

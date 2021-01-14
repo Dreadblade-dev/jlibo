@@ -53,6 +53,22 @@ public class BookController {
         return "main";
     }
 
+    @GetMapping("/book/{id}/edit")
+    public String getBookEditPage(@PathVariable("id") Book book, Model model) {
+        model.addAttribute("book", book);
+        return "bookEdit";
+    }
+
+    @GetMapping("/book/suggested")
+    public String getSuggestedBooksPage(@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+                                    Model model) {
+        Page<Book> page = bookService.findAllNotAccepted(pageable);
+
+        model.addAttribute("page", page);
+        model.addAttribute("isSuggestedPage", true);
+        return "main";
+    }
+
     @GetMapping(value = "/book/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
     public @ResponseBody byte[] getBookFile(@PathVariable("id") Book book) {
         try {
@@ -107,10 +123,16 @@ public class BookController {
         return "redirect:/author/" + author.getId();
     }
 
-    @GetMapping("/book/{id}/edit")
-    public String getBookEditPage(@PathVariable("id") Book book, Model model) {
-        model.addAttribute("book", book);
-        return "bookEdit";
+    @PostMapping("/book/{id}/accept")
+    public String acceptBook(@PathVariable("id") Book book) {
+        bookService.acceptBook(book);
+        return "redirect:/book/suggested";
+    }
+
+    @PostMapping("/book/{id}/decline")
+    public String declineBook(@PathVariable("id") Book book) {
+        bookService.declineBook(book);
+        return "redirect:/book/suggested";
     }
 
     @PostMapping("/book/{id}/edit")

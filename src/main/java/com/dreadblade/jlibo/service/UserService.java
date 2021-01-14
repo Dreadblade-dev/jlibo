@@ -103,7 +103,12 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public void updateUser(User user, MultipartFile image) throws IOException {
+    public boolean updateUser(User user, MultipartFile image) throws IOException {
+        User userFromDb = userRepo.findByUsername(user.getUsername());
+        if (userFromDb != null && !user.getId().equals(userFromDb.getId())) {
+            return false;
+        }
+
         if (image != null && !image.isEmpty()) {
             String filename = FileUtil.saveFile(image, uploadPath, FileUtil.TypeOfFile.USER_IMAGE);
             user.setImageFilename(filename);
@@ -113,6 +118,8 @@ public class UserService implements UserDetailsService {
             user.setUploadedBooks(temp.getUploadedBooks());
         }
         userRepo.save(user);
+
+        return true;
     }
 
     public void deleteById(Long id) {

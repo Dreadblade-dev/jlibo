@@ -48,6 +48,10 @@ public class BookService {
         return bookRepo.findByUserContainsFilter(pageable, user, filter);
     }
 
+    public Page<Book> findAllNotAccepted(Pageable pageable) {
+        return bookRepo.findAllNotAccepted(pageable);
+    }
+
     public boolean addBook(Book book, MultipartFile imageFile,
                         MultipartFile bookFile, User uploadedBy) throws IOException {
 
@@ -66,8 +70,32 @@ public class BookService {
         String imageFilename = FileUtil.saveFile(imageFile, uploadPath, FileUtil.TypeOfFile.BOOK_IMAGE);
         book.setImageFilename(imageFilename);
 
+        if (uploadedBy.isAdmin()) {
+            book.setAccepted(true);
+        }
+
         bookRepo.save(book);
         return true;
+    }
+
+    public boolean acceptBook(Book book) {
+        if (book.isAccepted()) {
+            return true;
+        }
+
+        book.setAccepted(true);
+
+        bookRepo.save(book);
+        return true;
+    }
+
+    public boolean declineBook(Book book) {
+        if (!book.isAccepted()) {
+            deleteBookById(book.getId());
+            return true;
+        }
+
+        return false;
     }
 
     public void updateBook(Book book, MultipartFile imageFile, MultipartFile bookFile) throws IOException {

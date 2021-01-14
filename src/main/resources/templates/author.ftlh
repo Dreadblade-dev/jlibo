@@ -17,7 +17,7 @@
             <p>${author.getDescription()}</p>
         </div>
     </div>
-    <#if isAdmin>
+    <#if currentUser??>
         <#if message??>
             <p>${message}</p>
         </#if>

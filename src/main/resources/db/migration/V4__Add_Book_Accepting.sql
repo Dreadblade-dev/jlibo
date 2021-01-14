@@ -1,0 +1,1 @@
+alter table books add column is_accepted boolean not null default false;

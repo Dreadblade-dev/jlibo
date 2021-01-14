@@ -1,6 +1,8 @@
 <#include "security.ftlh">
 <#import "pager.ftlh" as p>
-<@p.pager url page/>
+<#if book??>
+    <@p.pager url page/>
+</#if>
     <#if page.getContent()??>
         <#if page.getContent()?size gt 0>
             <div class="container justify-content-center align-items-center card-columns" id="books-list">
@@ -28,6 +30,17 @@
                                         ${book.getUploadedBy().getUsername()}
                                     </a>
                                 </p>
+                                <#if isSuggestedPage??>
+                                    <form method="post" class="card-text row justify-content-between">
+                                        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                                        <button formaction="/book/${book.getId()}/accept" class="btn btn-success col-4 ml-2">
+                                            Accept
+                                        </button>
+                                        <button formaction="/book/${book.getId()}/decline" class="btn btn-danger col-4 mr-2">
+                                            Decline
+                                        </button>
+                                    </form>
+                                </#if>
                             </div>
                         </div>
                     </#if>
@@ -37,4 +50,6 @@
             <h5>There are no books</h5>
         </#if>
     </#if>
-<@p.pager url page/>
+<#if book??>
+    <@p.pager url page/>
+</#if>
