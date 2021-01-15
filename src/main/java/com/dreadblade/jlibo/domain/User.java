@@ -50,6 +50,10 @@ public class User implements UserDetails {
         return roles.contains(Role.ADMIN);
     }
 
+    public String getHighestRoleName() {
+        return isAdmin() ? Role.ADMIN.getName() : Role.USER.getName();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();

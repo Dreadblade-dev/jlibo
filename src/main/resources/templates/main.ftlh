@@ -1,7 +1,6 @@
 <#import "parts/common.ftlh" as c>
-<#import "parts/bookFilter.ftlh" as f>
+<#import "parts/bookList.ftlh" as l>
 
 <@c.page>
-    <@f.filterForm ""/>
-    <#include "parts/bookList.ftlh">
+    <@l.bookList ""/>
 </@c.page>

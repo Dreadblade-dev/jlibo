@@ -98,6 +98,10 @@ public class BookService {
         return false;
     }
 
+    public boolean isBookAccepted(Book book) {
+        return bookRepo.findByTitleAndAuthor(book.getTitle(), book.getAuthor()).isAccepted();
+    }
+
     public void updateBook(Book book, MultipartFile imageFile, MultipartFile bookFile) throws IOException {
         if (bookFile != null && !bookFile.isEmpty()) {
             String bookFilename = FileUtil.saveFile(bookFile, uploadPath, FileUtil.TypeOfFile.BOOK_FILE);

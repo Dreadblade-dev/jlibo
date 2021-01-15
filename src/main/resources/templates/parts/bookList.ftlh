@@ -1,10 +1,15 @@
-<#include "security.ftlh">
-<#import "pager.ftlh" as p>
-<#if book??>
-    <@p.pager url page/>
-</#if>
+<#macro bookList filterUrl>
+    <#include "security.ftlh">
+    <#import "pager.ftlh" as p>
+    <#import "bookFilter.ftlh" as f>
+
+    <#if book??>
+        <@p.pager url page/>
+    </#if>
     <#if page.getContent()??>
         <#if page.getContent()?size gt 0>
+            <@f.filterForm filterUrl/>
+
             <div class="container justify-content-center align-items-center card-columns" id="books-list">
                 <#list page.getContent() as book>
                     <#if book??>
@@ -50,6 +55,8 @@
             <h5>There are no books</h5>
         </#if>
     </#if>
-<#if book??>
-    <@p.pager url page/>
-</#if>
+    <#if book??>
+        <@p.pager url page/>
+    </#if>
+</#macro>
+

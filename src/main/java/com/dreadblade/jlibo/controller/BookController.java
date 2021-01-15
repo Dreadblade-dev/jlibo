@@ -56,6 +56,7 @@ public class BookController {
     @GetMapping("/book/{id}/edit")
     public String getBookEditPage(@PathVariable("id") Book book, Model model) {
         model.addAttribute("book", book);
+        model.addAttribute("isAccepted", bookService.isBookAccepted(book));
         return "bookEdit";
     }
 
@@ -116,10 +117,17 @@ public class BookController {
 
         if (!isBookAdded) {
             model.addAttribute("message", "This book already exists!");
+            model.addAttribute("messageType", "danger");
         }
 
         Page<Book> page = bookService.findAll(pageable, null);
         model.addAttribute("page", page);
+
+        if (!bookService.isBookAccepted(book)) {
+            model.addAttribute("message", "Your book need to be verificated before adding");
+            model.addAttribute("messageType", "success");
+        }
+
         return "redirect:/author/" + author.getId();
     }
 

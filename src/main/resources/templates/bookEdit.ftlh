@@ -21,6 +21,17 @@
                     <a href="/user/${book.getUploadedBy().getId()}">
                         ${book.getUploadedBy().getUsername()}
                     </a>
+                    <#if isAccepted?? && !isAccepted>
+                        <form method="post" class="card-text row justify-content-between">
+                            <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                            <button formaction="/book/${book.getId()}/accept" class="btn btn-success col-4 ml-2">
+                                Accept
+                            </button>
+                            <button formaction="/book/${book.getId()}/decline" class="btn btn-danger col-4 mr-2">
+                                Decline
+                            </button>
+                        </form>
+                    </#if>
                 </p>
             </div>
         </div>

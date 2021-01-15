@@ -1,6 +1,7 @@
 <#import "parts/common.ftlh" as c>
-<#import "parts/bookFilter.ftlh" as f>
+<#import "parts/bookList.ftlh" as l>
 <#include "parts/security.ftlh">
+
 <@c.page>
     <div class="mb-3">
         <h1 class="d-inline-block">
@@ -28,7 +29,5 @@
             ${page.getContent()?size} book<#if page.getContent()?size gt 1 && page.getContent()?size != 0>s</#if>:
         </#if>
     </h3>
-    <@f.filterForm "/author/${author.getId()}"/>
-
-    <#include "parts/bookList.ftlh">
+    <@l.bookList "/author/${author.getId()}"/>
 </@c.page>

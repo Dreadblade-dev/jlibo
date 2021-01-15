@@ -47,11 +47,6 @@ public class UserController {
         this.restTemplate = restTemplate;
     }
 
-    @GetMapping("/login")
-    public String getLoginPage(Model model) {
-        return "login";
-    }
-
     @GetMapping("/sign-up")
     public String getSignUpPage(Model model) {
         model.addAttribute("recaptcha", recaptchaConfig);
@@ -113,7 +108,10 @@ public class UserController {
 
         userService.addUser(user, image);
 
-        return "redirect:/login";
+        model.addAttribute("message", "Registration is almost complete! Please, check your e-mail to activate your account.");
+        model.addAttribute("messageType", "success");
+
+        return "login";
     }
 
     @GetMapping("/activate/{code}")
@@ -121,7 +119,7 @@ public class UserController {
         boolean isActivated = userService.activateUser(code);
 
         if (isActivated) {
-            model.addAttribute("message", "User successfully activated!");
+            model.addAttribute("message", "Your account has been successfully activated!");
             model.addAttribute("messageType", "success");
         } else {
             model.addAttribute("message", "Activation code not found!");
