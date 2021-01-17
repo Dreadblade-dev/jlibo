@@ -4,6 +4,7 @@ import com.dreadblade.jlibo.config.RecaptchaConfig;
 import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.Role;
 import com.dreadblade.jlibo.domain.User;
+import com.dreadblade.jlibo.domain.dto.BookDto;
 import com.dreadblade.jlibo.domain.dto.RecaptchaResponseDto;
 import com.dreadblade.jlibo.service.BookService;
 import com.dreadblade.jlibo.service.UserService;
@@ -184,9 +185,11 @@ public class UserController {
     public String getUserPage(
             @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false, defaultValue = "") String filter,
-            @PathVariable("id") User user, Model model
+            @PathVariable("id") User user,
+            @AuthenticationPrincipal User currentUser,
+            Model model
     ) {
-        Page<Book> page = bookService.findByUser(pageable, user, filter);
+        Page<BookDto> page = bookService.findByUser(pageable, currentUser, user, filter);
 
         model.addAttribute("user", user);
         model.addAttribute("filter", filter);

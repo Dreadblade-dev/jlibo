@@ -3,6 +3,33 @@
 <#include "parts/security.ftlh">
 
 <@c.page>
+
+    <#if message??>
+        <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center" style="height: 100px;" id="toast-container">
+            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="30000">
+                <div class="toast-header">
+                    <strong class="mr-auto">Jlibo</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $(".toast").toast("show");
+            });
+
+            $(".toast").on("hidden.bs.toast", function () {
+                document.getElementById("toast-container").style.height = "0px";
+            })
+        </script>
+    </#if>
+
     <div class="mb-3">
         <h1 class="d-inline-block">
             ${author.getName()}
@@ -19,9 +46,6 @@
         </div>
     </div>
     <#if currentUser??>
-        <#if message??>
-            <p>${message}</p>
-        </#if>
         <#include "parts/bookUploadForm.ftlh">
     </#if>
     <h3 class="mt-5">

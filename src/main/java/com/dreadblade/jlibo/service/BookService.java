@@ -3,6 +3,7 @@ package com.dreadblade.jlibo.service;
 import com.dreadblade.jlibo.domain.Author;
 import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.User;
+import com.dreadblade.jlibo.domain.dto.BookDto;
 import com.dreadblade.jlibo.repo.BookRepo;
 import com.dreadblade.jlibo.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,27 +29,27 @@ public class BookService {
         this.authorService = authorService;
     }
 
-    public Page<Book> findAll(Pageable pageable, String filter) {
+    public Page<BookDto> findAll(Pageable pageable, User currentUser, String filter) {
         if (filter == null || filter.isEmpty()) {
-            return bookRepo.findAll(pageable);
+            return bookRepo.findAll(pageable, currentUser);
         }
 
-        return bookRepo.findAllContainsFilter(pageable, filter);
+        return bookRepo.findAllContainsFilter(pageable, currentUser, filter);
     }
 
     public Book findById(Long id) {
         return bookRepo.findById(id).orElse(null);
     }
 
-    public Page<Book> findByAuthor(Pageable pageable, Author author, String filter) {
-        return bookRepo.findByAuthorContainsFilter(pageable, author, filter);
+    public Page<BookDto> findByAuthor(Pageable pageable, User currentUser, Author author, String filter) {
+        return bookRepo.findByAuthorContainsFilter(pageable, currentUser, author, filter);
     }
 
-    public Page<Book> findByUser(Pageable pageable, User user, String filter) {
-        return bookRepo.findByUserContainsFilter(pageable, user, filter);
+    public Page<BookDto> findByUser(Pageable pageable, User currentUser, User user, String filter) {
+        return bookRepo.findByUserContainsFilter(pageable, currentUser, user, filter);
     }
 
-    public Page<Book> findAllNotAccepted(Pageable pageable) {
+    public Page<BookDto> findAllNotAccepted(Pageable pageable) {
         return bookRepo.findAllNotAccepted(pageable);
     }
 

@@ -2,6 +2,8 @@ package com.dreadblade.jlibo.controller;
 
 import com.dreadblade.jlibo.domain.Author;
 import com.dreadblade.jlibo.domain.Book;
+import com.dreadblade.jlibo.domain.User;
+import com.dreadblade.jlibo.domain.dto.BookDto;
 import com.dreadblade.jlibo.service.AuthorService;
 import com.dreadblade.jlibo.service.BookService;
 import com.dreadblade.jlibo.util.ControllerUtils;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,9 +41,11 @@ public class AuthorController {
             @PathVariable("id") Author author,
             @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false, defaultValue = "") String filter,
+            @RequestParam(required = false, defaultValue = "false", name = "upload") boolean isBookUploaded,
+            @AuthenticationPrincipal User currentUser,
             Model model
     ) {
-        Page<Book> page = bookService.findByAuthor(pageable, author, filter);
+        Page<BookDto> page = bookService.findByAuthor(pageable, currentUser, author, filter);
 
         model.addAttribute("filter", filter);
         model.addAttribute("page", page);
@@ -48,6 +53,16 @@ public class AuthorController {
             model.addAttribute("url", "/author/" + author.getId());
         } else {
             model.addAttribute("url", "/author/" + author.getId() + "?filter=" + filter);
+        }
+
+        if (isBookUploaded) {
+            if (currentUser.isAdmin()) {
+                model.addAttribute("message", "Your book was uploaded successfully! " +
+                        "Thank you for uploading the book!");
+            } else {
+                model.addAttribute("message", "The book you uploaded has been sent to" +
+                        " the administration for review. Thank you for uploading the book!");
+            }
         }
 
         model.addAttribute("author", author);

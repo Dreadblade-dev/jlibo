@@ -3,6 +3,7 @@ package com.dreadblade.jlibo.controller;
 import com.dreadblade.jlibo.domain.Author;
 import com.dreadblade.jlibo.domain.Book;
 import com.dreadblade.jlibo.domain.User;
+import com.dreadblade.jlibo.domain.dto.BookDto;
 import com.dreadblade.jlibo.service.BookService;
 import com.dreadblade.jlibo.util.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 public class BookController {
@@ -39,8 +44,9 @@ public class BookController {
     @GetMapping("/")
     public String getMainPage(@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
                               @RequestParam(required = false, defaultValue = "") String filter,
+                              @AuthenticationPrincipal User currentUser,
                               Model model) {
-        Page<Book> page = bookService.findAll(pageable, filter);
+        Page<BookDto> page = bookService.findAll(pageable, currentUser, filter);
 
         model.addAttribute("filter", filter);
         model.addAttribute("page", page);
@@ -63,7 +69,7 @@ public class BookController {
     @GetMapping("/book/suggested")
     public String getSuggestedBooksPage(@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
                                     Model model) {
-        Page<Book> page = bookService.findAllNotAccepted(pageable);
+        Page<BookDto> page = bookService.findAllNotAccepted(pageable);
 
         model.addAttribute("page", page);
         model.addAttribute("isSuggestedPage", true);
@@ -92,8 +98,12 @@ public class BookController {
                           @RequestParam MultipartFile imageFile,
                           @RequestParam MultipartFile bookFile,
                           @AuthenticationPrincipal User uploadedBy,
+                          @RequestParam(required = false, defaultValue = "") String filter,
                           Model model
     ) throws IOException {
+        Page<BookDto> page = bookService.findAll(pageable, uploadedBy, filter);
+        model.addAttribute("page", page);
+
         if (bindingResult.hasErrors() || imageFile == null || imageFile.isEmpty() ||
                 bookFile == null || bookFile.isEmpty()) {
             Map<String, String> errors = ControllerUtils.getValidationErrors(bindingResult);
@@ -108,7 +118,8 @@ public class BookController {
 
             model.addAttribute("title", book.getTitle());
             model.addAttribute("author", author);
-            model.addAttribute("books", author.getBooks());
+            model.addAttribute("message", "Your book is not uploaded! Check the uploading form for details!");
+
             return "author";
         }
 
@@ -117,30 +128,65 @@ public class BookController {
 
         if (!isBookAdded) {
             model.addAttribute("message", "This book already exists!");
-            model.addAttribute("messageType", "danger");
+            model.addAttribute("author", author);
+            return "author";
         }
 
-        Page<Book> page = bookService.findAll(pageable, null);
-        model.addAttribute("page", page);
+        return "redirect:/author/" + author.getId() + "?upload=true";
+    }
 
-        if (!bookService.isBookAccepted(book)) {
-            model.addAttribute("message", "Your book need to be verificated before adding");
-            model.addAttribute("messageType", "success");
+    @GetMapping("/book/{id}/like")
+    public String addBookToCollection(@AuthenticationPrincipal User user,
+                                      @PathVariable("id") Book book,
+                                      RedirectAttributes redirectAttributes,
+                                      @RequestHeader(required = false) String referer) {
+        Set<User> likes = book.getLikes();
+
+        if (likes.contains(user)) {
+            likes.remove(user);
+        } else {
+            likes.add(user);
         }
 
-        return "redirect:/author/" + author.getId();
+        UriComponents components = UriComponentsBuilder.fromHttpUrl(referer).build();
+
+        components.getQueryParams()
+                .entrySet()
+                .forEach(pair -> redirectAttributes.addAttribute(pair.getKey(), pair.getValue()));
+
+        return "redirect:" + components.getPath();
     }
 
     @PostMapping("/book/{id}/accept")
-    public String acceptBook(@PathVariable("id") Book book) {
+    public String acceptBook(@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+                             @PathVariable("id") Book book,
+                             RedirectAttributes redirectAttributes,
+                             @RequestHeader(required = false) String referer) {
         bookService.acceptBook(book);
-        return "redirect:/book/suggested";
+
+        UriComponents components = UriComponentsBuilder.fromHttpUrl(referer).build();
+
+        components.getQueryParams()
+                .entrySet()
+                .forEach(pair -> redirectAttributes.addAttribute(pair.getKey(), pair.getValue()));
+
+        return "redirect:" + components.getPath();
     }
 
     @PostMapping("/book/{id}/decline")
-    public String declineBook(@PathVariable("id") Book book) {
+    public String declineBook(@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+                              @PathVariable("id") Book book,
+                              RedirectAttributes redirectAttributes,
+                              @RequestHeader(required = false) String referer) {
         bookService.declineBook(book);
-        return "redirect:/book/suggested";
+
+        UriComponents components = UriComponentsBuilder.fromHttpUrl(referer).build();
+
+        components.getQueryParams()
+                .entrySet()
+                .forEach(pair -> redirectAttributes.addAttribute(pair.getKey(), pair.getValue()));
+
+        return "redirect:" + components.getPath();
     }
 
     @PostMapping("/book/{id}/edit")

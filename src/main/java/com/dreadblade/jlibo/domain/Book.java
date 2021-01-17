@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -24,6 +25,9 @@ public class Book {
 
     private boolean isAccepted;
 
+    private String imageFilename;
+    private String bookFilename;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
@@ -32,6 +36,11 @@ public class Book {
     @JoinColumn(name = "user_id")
     private User uploadedBy;
 
-    private String imageFilename;
-    private String bookFilename;
+    @ManyToMany
+    @JoinTable(
+            name = "book_likes",
+            joinColumns = { @JoinColumn(name = "book_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id")}
+    )
+    private Set<User> likes;
 }

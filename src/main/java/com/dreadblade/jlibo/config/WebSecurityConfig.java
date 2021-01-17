@@ -34,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/author/**/delete").hasAuthority(Role.ADMIN.getAuthority())
                     .antMatchers("/book/**").authenticated()
                     .antMatchers("/book/new").authenticated()
+                    .antMatchers("/book/{id}/like").authenticated()
                     .antMatchers("/book/suggested").hasAuthority(Role.ADMIN.getAuthority())
                     .antMatchers("/book/**/accept").hasAuthority(Role.ADMIN.getAuthority())
                     .antMatchers("/book/**/decline").hasAuthority(Role.ADMIN.getAuthority())
